@@ -19,14 +19,13 @@ import java.sql.*;
 public class SelectServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String fullName = request.getParameter("fullName");
         try (Connection connection = DriverManager.getConnection("jdbc:derby://localhost:1527/companydb");
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM PERSON");
+             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM PERSON WHERE FULL_NAME = ?");
              PrintWriter out = response.getWriter()
         ) {
+            stmt.setString(1, fullName);
+            ResultSet rs = stmt.executeQuery();
             out.format("| %5s | %-30s | %15s | %10s | %10s |\n", "ID", "NAME", "SALARY", "POSITION", "DEPARTMENT");
             while (rs.next()) {
                 long id = rs.getLong("ID");
